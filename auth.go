@@ -26,7 +26,13 @@ func AuthMiddleware(key string, mode string) gin.HandlerFunc {
 		}
 
 		claims := token.Claims.(*jwt.StandardClaims)
-		c.Request.Header.Set("MerchantId", claims.Issuer)
+		loginInfo := LoadLoginInfo(claims.Issuer)
+
+
+		c.Request.Header.Set("MerchantId", loginInfo.Namespace)
+		c.Request.Header.Set("AccountId", loginInfo.User)
+		c.Request.Header.Set("Avatar", loginInfo.Avatar)
+		
 		c.Next()
 	}
 }
