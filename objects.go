@@ -14,15 +14,18 @@ type LoginInfo struct {
 	User string `json:"user"`
 	// Avatar 用户头像
 	Avatar string `json:"avatar"`
+	// LoginType 登陆类型
+	LoginType string `json:"login_type"  bson:"login_type"`
 }
 
 // 登陆信息
-func DumpLoginInfo(namespace string, user string, avatar string) string{
+func DumpLoginInfo(namespace string, user string, avatar string, loginType string) string{
 	// step 01 转换为json
 	loginInfo := LoginInfo{
 		Namespace: namespace,
 		User: user,
 		Avatar: avatar,
+		LoginType: loginType,
 	}
 	payload, err := json.Marshal(loginInfo)
 	if err != nil {
