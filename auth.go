@@ -32,7 +32,7 @@ func AuthMiddleware(key string, mode string) gin.HandlerFunc {
 		c.Request.Header.Set("MerchantId", loginInfo.Namespace)
 		c.Request.Header.Set("AccountId", loginInfo.User)
 		c.Request.Header.Set("Avatar", loginInfo.Avatar)
-		
+		c.Request.Header.Set("LoginType", loginInfo.LoginType)
 		c.Next()
 	}
 }
