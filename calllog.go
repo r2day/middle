@@ -69,7 +69,7 @@ func CallLogMiddleware(db * mongo.Database) gin.HandlerFunc {
 
 	var jsonInstance LoginRequest
 	if err := c.ShouldBindJSON(&jsonInstance); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error(), "message": "request params no right"})
 		return
 	}
 
@@ -99,7 +99,7 @@ func CallLogMiddleware(db * mongo.Database) gin.HandlerFunc {
 	// 插入记录
 	_, err := coll.InsertOne(c.Request.Context(), newOne)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"message": "failed to insert one"})
+		c.JSON(http.StatusBadRequest, gin.H{"message": "failed to insert one", "error": err.Error()})
 		return
 	}
 	c.Next()
