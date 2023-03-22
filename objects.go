@@ -9,9 +9,12 @@ type LoginInfo struct {
 	// 命名空间
 	// 可是商户号
 	Namespace string `json:"namespace"`
+	// 账号id
+	AccountId string `json:"account_id"  bson:"account_id"`
+	// 可以是手机号
+	UserId string `json:"user_id"  bson:"user_id"`
 	// 用户名
-	// 可以是手机号/用户名
-	User string `json:"user"`
+	UserName string `json:"user_name"  bson:"user_name"`
 	// Avatar 用户头像
 	Avatar string `json:"avatar"`
 	// LoginType 登陆类型
@@ -19,11 +22,13 @@ type LoginInfo struct {
 }
 
 // 登陆信息
-func DumpLoginInfo(namespace string, user string, avatar string, loginType string) string{
+func DumpLoginInfo(namespace string, userId string, avatar string, loginType string, userName string, accountId string) string{
 	// step 01 转换为json
 	loginInfo := LoginInfo{
 		Namespace: namespace,
-		User: user,
+		AccountId: accountId,
+		UserId: userId,
+		UserName: userName,
 		Avatar: avatar,
 		LoginType: loginType,
 	}
