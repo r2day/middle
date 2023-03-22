@@ -9,6 +9,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	rtime "github.com/r2day/base/time"
+	"github.com/gin-gonic/gin/binding"
 )
 
 const (
@@ -68,7 +69,7 @@ func CallLogMiddleware(db * mongo.Database) gin.HandlerFunc {
 	coll := db.Collection(customCallLogColl)
 
 	var jsonInstance LoginRequest
-	if err := c.ShouldBindJSON(&jsonInstance); err != nil {
+	if err := c.ShouldBindBodyWith(&jsonInstance, binding.JSON); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error(), "message": "request params no right"})
 		return
 	}
