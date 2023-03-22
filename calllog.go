@@ -5,7 +5,6 @@ import (
 	"os"
 	"time"
 
-	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -98,7 +97,7 @@ func CallLogMiddleware(db * mongo.Database) gin.HandlerFunc {
 
 	// 写入数据库
 	// 插入记录
-	result, err := coll.InsertOne(c.Request.Context(), newOne)
+	_, err := coll.InsertOne(c.Request.Context(), newOne)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "failed to insert one"})
 		return
