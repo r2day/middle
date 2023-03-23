@@ -1,15 +1,16 @@
 package middle
 
 import (
+	"fmt"
 	"net/http"
 	"os"
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/bson/primitive"
-	rtime "github.com/r2day/base/time"
 	"github.com/gin-gonic/gin/binding"
+	rtime "github.com/r2day/base/time"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 const (
@@ -61,6 +62,12 @@ func CallLogMiddleware(db * mongo.Database) gin.HandlerFunc {
 
 	return func(c *gin.Context) {
 
+	if c.Request.Method == "GET" {
+		fmt.Println("it is get method ,no data change so don't need to record it by default")
+		c.Next()
+		return 
+	}
+
 	if (customCallLogColl == "") {
 		customCallLogColl = defaultCallLogColl
 	}
@@ -87,7 +94,7 @@ func CallLogMiddleware(db * mongo.Database) gin.HandlerFunc {
 
 	// 插入身份信息
 	createdAt := rtime.FomratTimeAsReader(time.Now().Unix())
-	whoChange := "frank"
+	whoChange :=  c.GetHeader("AccountId")
 	newOne.UserId = whoChange
 	newOne.UpdatedUserId = whoChange
 	newOne.CreatedAt = createdAt
