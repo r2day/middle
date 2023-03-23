@@ -15,10 +15,12 @@ import (
 
 const (
 	defaultCallLogColl = "default_call_log"
+	defaultOperationLogColl = "default_operation_log"
 )
 
 var (
 	customCallLogColl = os.Getenv("CUSTOME_CALL_LOG_COLL")
+	customOperationLogColl = os.Getenv("CUSTOME_OPERATION_LOG_COLL")
 )
 
 type CallLogData struct {
@@ -57,8 +59,8 @@ type LoginRequest struct {
 	Type string `form:"type" json:"type" xml:"type"`
 }
 
-// CallLogMiddleware 调用日志
-func CallLogMiddleware(db * mongo.Database) gin.HandlerFunc {
+// LoginLogMiddleware 调用日志
+func LoginLogMiddleware(db * mongo.Database) gin.HandlerFunc {
 
 	return func(c *gin.Context) {
 
@@ -91,6 +93,62 @@ func CallLogMiddleware(db * mongo.Database) gin.HandlerFunc {
 	newOne.MerchantId = jsonInstance.MerchantId
 	newOne.ID = primitive.NewObjectID()
 	newOne.UserId = jsonInstance.Phone
+
+	// 插入身份信息
+	createdAt := rtime.FomratTimeAsReader(time.Now().Unix())
+	whoChange :=  c.GetHeader("AccountId")
+	newOne.UserId = whoChange
+	newOne.UpdatedUserId = whoChange
+	newOne.CreatedAt = createdAt
+	newOne.UpdatedAt = createdAt
+	newOne.ClientIP = clientIP
+	newOne.RemoteIP = remoteIP
+	newOne.FullPath = fullPath
+
+	// 写入数据库
+	// 插入记录
+	_, err := coll.InsertOne(c.Request.Context(), newOne)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "failed to insert one", "error": err.Error()})
+		return
+	}
+	c.Next()
+	}
+}
+
+// CallLogMiddleware 调用日志
+func CallLogMiddleware(db * mongo.Database) gin.HandlerFunc {
+
+	return func(c *gin.Context) {
+
+	if c.Request.Method == "GET" {
+		fmt.Println("it is get method ,no data change so don't need to record it by default")
+		c.Next()
+		return 
+	}
+
+	if (customOperationLogColl == "") {
+		customOperationLogColl = defaultOperationLogColl
+	}
+
+	// 声明表
+	coll := db.Collection(customOperationLogColl)
+
+	// var jsonInstance LoginRequest
+	// if err := c.ShouldBindBodyWith(&jsonInstance, binding.JSON); err != nil {
+	// 	c.JSON(http.StatusBadRequest, gin.H{"error": err.Error(), "message": "request params no right"})
+	// 	return
+	// }
+
+	clientIP := c.ClientIP()
+	remoteIP := c.RemoteIP()
+	fullPath := c.FullPath()
+
+
+	newOne := &CallLogData{}
+	// 基本查询条件
+	newOne.MerchantId = c.GetHeader("MerchantId")
+	newOne.ID = primitive.NewObjectID()
 
 	// 插入身份信息
 	createdAt := rtime.FomratTimeAsReader(time.Now().Unix())
