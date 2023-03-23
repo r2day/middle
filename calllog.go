@@ -47,6 +47,8 @@ type CallLogData struct {
 	FullPath string `json:"full_path"  bson:"full_path"`
 	// 请求方法/操作
 	Method string `json:"method"  bson:"method"`
+	// 目标
+	TargetId string `json:"target_id"  bson:"target_id"`
 }
 
 
@@ -160,6 +162,7 @@ func CallLogMiddleware(db * mongo.Database) gin.HandlerFunc {
 	newOne.RemoteIP = remoteIP
 	newOne.FullPath = fullPath
 	newOne.Method = method
+	newOne.TargetId = c.Param("id")
 
 	// TODO debug
 	fmt.Println("newOne-->", newOne.Method)
