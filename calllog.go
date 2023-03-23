@@ -16,6 +16,7 @@ import (
 const (
 	defaultCallLogColl = "default_call_log"
 	defaultOperationLogColl = "default_operation_log"
+	ignoreGET = "GET"
 )
 
 var (
@@ -121,9 +122,11 @@ func LoginLogMiddleware(db * mongo.Database) gin.HandlerFunc {
 // CallLogMiddleware 调用日志
 func CallLogMiddleware(db * mongo.Database) gin.HandlerFunc {
 
+
 	return func(c *gin.Context) {
 	method := c.Request.Method
-	if c.Request.Method == method {
+	fmt.Println("request method -->", method)
+	if c.Request.Method == ignoreGET {
 		fmt.Println("it is get method ,no data change so don't need to record it by default")
 		c.Next()
 		return 
