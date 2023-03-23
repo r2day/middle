@@ -127,7 +127,6 @@ func CallLogMiddleware(db * mongo.Database) gin.HandlerFunc {
 
 	return func(c *gin.Context) {
 	method := c.Request.Method
-	fmt.Println("request method -->", method)
 	if c.Request.Method == ignoreGET {
 		fmt.Println("it is get method ,no data change so don't need to record it by default")
 		c.Next()
@@ -163,9 +162,6 @@ func CallLogMiddleware(db * mongo.Database) gin.HandlerFunc {
 	newOne.FullPath = fullPath
 	newOne.Method = method
 	newOne.TargetId = c.Param("_id")
-
-	// TODO debug
-	fmt.Println("newOne-->", newOne.Method)
 
 	// 写入数据库
 	// 插入记录
