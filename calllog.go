@@ -162,7 +162,7 @@ func CallLogMiddleware(db * mongo.Database) gin.HandlerFunc {
 	newOne.RemoteIP = remoteIP
 	newOne.FullPath = fullPath
 	newOne.Method = method
-	newOne.TargetId = c.Param("id")
+	newOne.TargetId = c.Param("_id")
 
 	// TODO debug
 	fmt.Println("newOne-->", newOne.Method)
