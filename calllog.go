@@ -44,6 +44,8 @@ type CallLogData struct {
 	RemoteIP string `json:"remote_ip"  bson:"remote_ip"`
 	// 路径
 	FullPath string `json:"full_path"  bson:"full_path"`
+	// 请求方法/操作
+	Method string `json:"method"  bson:"method"`
 }
 
 
@@ -134,12 +136,6 @@ func CallLogMiddleware(db * mongo.Database) gin.HandlerFunc {
 	// 声明表
 	coll := db.Collection(customOperationLogColl)
 
-	// var jsonInstance LoginRequest
-	// if err := c.ShouldBindBodyWith(&jsonInstance, binding.JSON); err != nil {
-	// 	c.JSON(http.StatusBadRequest, gin.H{"error": err.Error(), "message": "request params no right"})
-	// 	return
-	// }
-
 	clientIP := c.ClientIP()
 	remoteIP := c.RemoteIP()
 	fullPath := c.FullPath()
@@ -160,6 +156,7 @@ func CallLogMiddleware(db * mongo.Database) gin.HandlerFunc {
 	newOne.ClientIP = clientIP
 	newOne.RemoteIP = remoteIP
 	newOne.FullPath = fullPath
+	newOne.Method = c.Request.Method
 
 	// 写入数据库
 	// 插入记录
