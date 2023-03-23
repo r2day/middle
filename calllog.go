@@ -122,8 +122,8 @@ func LoginLogMiddleware(db * mongo.Database) gin.HandlerFunc {
 func CallLogMiddleware(db * mongo.Database) gin.HandlerFunc {
 
 	return func(c *gin.Context) {
-
-	if c.Request.Method == "GET" {
+	method := c.Request.Method
+	if c.Request.Method == method {
 		fmt.Println("it is get method ,no data change so don't need to record it by default")
 		c.Next()
 		return 
@@ -156,7 +156,10 @@ func CallLogMiddleware(db * mongo.Database) gin.HandlerFunc {
 	newOne.ClientIP = clientIP
 	newOne.RemoteIP = remoteIP
 	newOne.FullPath = fullPath
-	newOne.Method = c.Request.Method
+	newOne.Method = method
+
+	// TODO debug
+	fmt.Println("newOne-->", newOne.Method)
 
 	// 写入数据库
 	// 插入记录
