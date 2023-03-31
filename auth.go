@@ -7,6 +7,15 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+const (
+	// 普通用户
+	LoginTypeNormal = "normal"
+	// 管理员
+	LoginTypeAdmin = "admin"
+	// 加盟
+	LoginTypeJoin = "join"
+)
+
 // AuthMiddleware 验证cookie并且将解析出来的商户号赋值到头部，供handler使用
 func AuthMiddleware(key string, mode string) gin.HandlerFunc {
 	return func(c *gin.Context) {
