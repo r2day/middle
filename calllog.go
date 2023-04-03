@@ -84,7 +84,7 @@ func LoginLogMiddleware(db * mongo.Database) gin.HandlerFunc {
 		logCtx := log.WithField("client_id", clientIP).
 		WithField("remote_ip", remoteIP).
 		WithField("full_path", fullPath).
-		WithField("resp_status", respStatus)
+		WithField("resp_status", respCode)
 
 		if c.Request.Method == ignoreGET {
 			logCtx.Debug("it is get method, we don't record it on database")
