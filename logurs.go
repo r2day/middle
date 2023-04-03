@@ -18,7 +18,7 @@ func RequestRespMiddleware(enableLog bool) gin.HandlerFunc {
 				"method": c.Request.Method,
 				"path": c.FullPath(),
 				"status": c.Writer.Status(),
-				"latency_ns": time.Since(start).Nanoseconds()
+				"latency_ns": time.Since(start).Nanoseconds(),
 			}).Info("request_detail")
 		}
 	}
