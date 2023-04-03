@@ -49,6 +49,8 @@ type CallLogData struct {
 	FullPath string `json:"full_path"  bson:"full_path"`
 	// 请求方法/操作
 	Method string `json:"method"  bson:"method"`
+	// 相应代码
+	RespCode string `json:"resp_code"  bson:"resp_code"`
 	// 目标
 	TargetId string `json:"target_id"  bson:"target_id"`
 }
@@ -70,57 +72,63 @@ type LoginRequest struct {
 func LoginLogMiddleware(db * mongo.Database) gin.HandlerFunc {
 
 	return func(c *gin.Context) {
+
+		// 先执行登陆操作
+		c.Next()
 		// 获取用户登陆信息
 		clientIP := c.ClientIP()
 		remoteIP := c.RemoteIP()
 		fullPath := c.FullPath()
+		respCode := c.Writer.Status()
+
 		logCtx := log.WithField("client_id", clientIP).
 		WithField("remote_ip", remoteIP).
-		WithField("full_path", fullPath)
+		WithField("full_path", fullPath).
+		WithField("resp_status", respStatus)
 
-	if c.Request.Method == ignoreGET {
-		logCtx.Debug("it is get method, we don't record it on database")
-		c.Next()
-		return 
-	}
+		if c.Request.Method == ignoreGET {
+			logCtx.Debug("it is get method, we don't record it on database")
+			c.Next()
+			return 
+		}
 
-	// 声明表
-	coll := db.Collection(SYS_LOGIN_LOG)
+		// 声明表
+		coll := db.Collection(SYS_LOGIN_LOG)
 
-	var jsonInstance LoginRequest
-	if err := c.ShouldBindBodyWith(&jsonInstance, binding.JSON); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error(), "message": "request params no right"})
-		return
-	}
-
-
+		var jsonInstance LoginRequest
+		if err := c.ShouldBindBodyWith(&jsonInstance, binding.JSON); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error(), "message": "login params no right"})
+			return
+		}
 
 
-	newOne := &CallLogData{}
-	// 基本查询条件
-	newOne.MerchantId = jsonInstance.MerchantId
-	newOne.ID = primitive.NewObjectID()
-	newOne.UserId = jsonInstance.Phone
 
-	// 插入身份信息
-	createdAt := rtime.FomratTimeAsReader(time.Now().Unix())
-	whoChange :=  c.GetHeader("AccountId")
-	newOne.UserId = whoChange
-	newOne.UpdatedUserId = whoChange
-	newOne.CreatedAt = createdAt
-	newOne.UpdatedAt = createdAt
-	newOne.ClientIP = clientIP
-	newOne.RemoteIP = remoteIP
-	newOne.FullPath = fullPath
 
-	// 写入数据库
-	// 插入记录
-	_, err := coll.InsertOne(c.Request.Context(), newOne)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"message": "failed to insert one", "error": err.Error()})
-		return
-	}
-	c.Next()
+		newOne := &CallLogData{}
+		// 基本查询条件
+		newOne.MerchantId = jsonInstance.MerchantId
+		newOne.ID = primitive.NewObjectID()
+		newOne.UserId = jsonInstance.Phone
+
+		// 插入身份信息
+		createdAt := rtime.FomratTimeAsReader(time.Now().Unix())
+		whoChange :=  c.GetHeader("AccountId")
+		newOne.UserId = whoChange
+		newOne.UpdatedUserId = whoChange
+		newOne.CreatedAt = createdAt
+		newOne.UpdatedAt = createdAt
+		newOne.ClientIP = clientIP
+		newOne.RemoteIP = remoteIP
+		newOne.FullPath = fullPath
+		newOne.RespCode = respCode
+
+		// 写入数据库
+		// 插入记录
+		_, err := coll.InsertOne(c.Request.Context(), newOne)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"message": "failed to insert one", "error": err.Error()})
+			return
+		}
 	}
 }
 
