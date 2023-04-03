@@ -11,9 +11,11 @@ import (
 	rtime "github.com/r2day/base/time"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	log "github.com/sirupsen/logrus"
 )
 
 const (
+	SYS_LOGIN_LOG = "sys_login_log"
 	defaultCallLogColl = "default_call_log"
 	defaultOperationLogColl = "default_operation_log"
 	ignoreGET = "GET"
@@ -64,23 +66,26 @@ type LoginRequest struct {
 	Type string `form:"type" json:"type" xml:"type"`
 }
 
-// LoginLogMiddleware 调用日志
+// LoginLogMiddleware 登陆日志
 func LoginLogMiddleware(db * mongo.Database) gin.HandlerFunc {
 
 	return func(c *gin.Context) {
+		// 获取用户登陆信息
+		clientIP := c.ClientIP()
+		remoteIP := c.RemoteIP()
+		fullPath := c.FullPath()
+		logCtx := log.WithField("client_id", clientIP).
+		WithField("remote_ip", remoteIP).
+		WithField("full_path", fullPath)
 
-	if c.Request.Method == "GET" {
-		fmt.Println("it is get method ,no data change so don't need to record it by default")
+	if c.Request.Method == ignoreGET {
+		logCtx.Debug("it is get method, we don't record it on database")
 		c.Next()
 		return 
 	}
 
-	if (customCallLogColl == "") {
-		customCallLogColl = defaultCallLogColl
-	}
-
 	// 声明表
-	coll := db.Collection(customCallLogColl)
+	coll := db.Collection(SYS_LOGIN_LOG)
 
 	var jsonInstance LoginRequest
 	if err := c.ShouldBindBodyWith(&jsonInstance, binding.JSON); err != nil {
@@ -88,9 +93,7 @@ func LoginLogMiddleware(db * mongo.Database) gin.HandlerFunc {
 		return
 	}
 
-	clientIP := c.ClientIP()
-	remoteIP := c.RemoteIP()
-	fullPath := c.FullPath()
+
 
 
 	newOne := &CallLogData{}
