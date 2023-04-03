@@ -50,7 +50,7 @@ type CallLogData struct {
 	// 请求方法/操作
 	Method string `json:"method"  bson:"method"`
 	// 相应代码
-	RespCode string `json:"resp_code"  bson:"resp_code"`
+	RespCode int `json:"resp_code"  bson:"resp_code"`
 	// 目标
 	TargetId string `json:"target_id"  bson:"target_id"`
 }
