@@ -105,7 +105,9 @@ func LoginLogMiddleware(db *mongo.Database) gin.HandlerFunc {
 		if isSimpleSign {
 			var jsonInstance body.SimpleSignInRequest
 			if err := c.ShouldBindBodyWith(&jsonInstance, binding.JSON); err != nil {
-				c.JSON(http.StatusBadRequest, gin.H{"error": err.Error(), "message": "login params no right"})
+				// c.JSON(http.StatusBadRequest, gin.H{"error": err.Error(), "message": "login params no right"})
+				logCtx.Error(err)
+				c.Next()
 				return
 			}
 
@@ -137,7 +139,8 @@ func LoginLogMiddleware(db *mongo.Database) gin.HandlerFunc {
 		} else {
 			var jsonInstance body.SignInRequest
 			if err := c.ShouldBindBodyWith(&jsonInstance, binding.JSON); err != nil {
-				c.JSON(http.StatusBadRequest, gin.H{"error": err.Error(), "message": "login params no right"})
+				logCtx.Error(err)
+				c.Next()
 				return
 			}
 
@@ -163,7 +166,8 @@ func LoginLogMiddleware(db *mongo.Database) gin.HandlerFunc {
 			// 插入记录
 			_, err := coll.InsertOne(c.Request.Context(), newOne)
 			if err != nil {
-				c.JSON(http.StatusBadRequest, gin.H{"message": "failed to insert one", "error": err.Error()})
+				logCtx.Error(err)
+				c.Next()
 				return
 			}
 
