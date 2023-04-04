@@ -89,8 +89,7 @@ func LoginLogMiddleware(db *mongo.Database) gin.HandlerFunc {
 			WithField("resp_status", respCode)
 
 		if c.Request.Method == ignoreGET {
-			logCtx.Debug("it is get method, we don't record it on database")
-			c.Next()
+			logCtx.Error("it is get method, we don't record it on database")
 			return
 		}
 
@@ -99,7 +98,8 @@ func LoginLogMiddleware(db *mongo.Database) gin.HandlerFunc {
 
 		isSimpleSign, err := strconv.ParseBool(os.Getenv("IS_SIMPLE_SIGN"))
 		if err != nil {
-			log.Fatal(err)
+			logCtx.Error(err)
+			return
 		}
 
 		if isSimpleSign {
@@ -107,7 +107,6 @@ func LoginLogMiddleware(db *mongo.Database) gin.HandlerFunc {
 			if err := c.ShouldBindBodyWith(&jsonInstance, binding.JSON); err != nil {
 				// c.JSON(http.StatusBadRequest, gin.H{"error": err.Error(), "message": "login params no right"})
 				logCtx.Error(err)
-				c.Next()
 				return
 			}
 
@@ -133,14 +132,13 @@ func LoginLogMiddleware(db *mongo.Database) gin.HandlerFunc {
 			// 插入记录
 			_, err := coll.InsertOne(c.Request.Context(), newOne)
 			if err != nil {
-				c.JSON(http.StatusBadRequest, gin.H{"message": "failed to insert one", "error": err.Error()})
+				logCtx.Error(err)
 				return
 			}
 		} else {
 			var jsonInstance body.SignInRequest
 			if err := c.ShouldBindBodyWith(&jsonInstance, binding.JSON); err != nil {
 				logCtx.Error(err)
-				c.Next()
 				return
 			}
 
@@ -167,7 +165,6 @@ func LoginLogMiddleware(db *mongo.Database) gin.HandlerFunc {
 			_, err := coll.InsertOne(c.Request.Context(), newOne)
 			if err != nil {
 				logCtx.Error(err)
-				c.Next()
 				return
 			}
 
