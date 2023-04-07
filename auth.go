@@ -2,7 +2,6 @@ package middle
 
 import (
 	"net/http"
-	b64 "encoding/base64"
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
