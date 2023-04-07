@@ -1,21 +1,15 @@
 package middle
 
 import (
+	"context"
 	"net/http"
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
+	"github.com/redis/go-redis/v9"
 )
 
-const (
-	// 普通用户
-	LoginTypeNormal = "normal"
-	// 管理员
-	LoginTypeAdmin = "admin"
-	// 加盟
-	LoginTypeJoin = "join"
-)
 
 // AccessMiddleware 验证cookie并且将解析出来的账号
 // 通过账号获取角色
@@ -55,7 +49,7 @@ func AccessMiddleware(key []byte, redisAddr string) gin.HandlerFunc {
 		// 查询数据库
 		roles := []string{"admin", "test"}
 		// 检测角色是否有权限
-		isAccess := CanAccess(redisAddr, c.FullPath(), roles)
+		isAccess := CanAccess(c.Request.Context(), redisAddr, c.FullPath(), roles)
 		if !isAccess {
 			log.WithField("message", "access denied").Error(err)
 			c.AbortWithStatus(http.StatusNotAcceptable)
@@ -67,8 +61,7 @@ func AccessMiddleware(key []byte, redisAddr string) gin.HandlerFunc {
 }
 
 
-func CanAccess(redisAddr string, path string, roles []string) bool {
-	access := false
+func CanAccess(ctx context.Context,  redisAddr string, path string, roles []string) bool {
 	rdb := redis.NewClient(&redis.Options{
         Addr:     redisAddr,
         Password: "", // no password set
@@ -80,8 +73,8 @@ func CanAccess(redisAddr string, path string, roles []string) bool {
 		val, err := rdb.Hget(ctx, path, role).Result()
 		if err != nil {
 			log.WithField("message", "no acceptable ").Error(err)
-			c.AbortWithStatus(http.StatusNotAcceptable)
-			return
+			// c.AbortWithStatus(http.StatusNotAcceptable)
+			return false
 		}
 		// is true
 		// 如果有一个角色是true 则代表其可以访问
