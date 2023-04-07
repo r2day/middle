@@ -32,7 +32,7 @@ func AuthMiddleware(key string, mode string) gin.HandlerFunc {
 		})
 
 		if err != nil {
-			log.WithField("message": "parse claims failed").Error(err)
+			log.WithField("message", "parse claims failed").Error(err)
 			c.AbortWithStatus(http.StatusUnauthorized)
 			return
 		}
