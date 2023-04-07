@@ -2,6 +2,7 @@ package middle
 
 import (
 	"net/http"
+	b64 "encoding/base64"
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
@@ -28,7 +29,8 @@ func AuthMiddleware(key string, mode string) gin.HandlerFunc {
 		}
 
 		token, err := jwt.ParseWithClaims(cookie, &jwt.StandardClaims{}, func(token *jwt.Token) (interface{}, error) {
-			return []byte(key), nil
+			sDec, _ := b64.StdEncoding.DecodeString(key)
+			return []byte(sDec), nil
 		})
 
 		if err != nil {
