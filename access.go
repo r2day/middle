@@ -3,20 +3,19 @@ package middle
 import (
 	"context"
 	"net/http"
+	"strconv"
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
-	log "github.com/sirupsen/logrus"
 	"github.com/redis/go-redis/v9"
+	log "github.com/sirupsen/logrus"
 )
-
 
 // AccessMiddleware 验证cookie并且将解析出来的账号
 // 通过账号获取角色
 // 通过角色判断其是否具有该api的访问权限
 // 用户登陆完成后会将权限配置信息写入 redis 数据库完成
 // 通过hget api/path/ role boolean
-// 
 func AccessMiddleware(key []byte, redisAddr string) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		cookie, err := c.Cookie("jwt")
@@ -60,13 +59,12 @@ func AccessMiddleware(key []byte, redisAddr string) gin.HandlerFunc {
 	}
 }
 
-
-func CanAccess(ctx context.Context,  redisAddr string, path string, roles []string) bool {
+func CanAccess(ctx context.Context, redisAddr string, path string, roles []string) bool {
 	rdb := redis.NewClient(&redis.Options{
-        Addr:     redisAddr,
-        Password: "", // no password set
-        DB:       0,  // use default DB
-    })
+		Addr:     redisAddr,
+		Password: "", // no password set
+		DB:       0,  // use default DB
+	})
 
 	// 仅进行路径的请求访问权限校验
 	for _, role := range roles {
@@ -78,7 +76,13 @@ func CanAccess(ctx context.Context,  redisAddr string, path string, roles []stri
 		}
 		// is true
 		// 如果有一个角色是true 则代表其可以访问
-		if bool(val) {
+		boolValue, err := strconv.ParseBool(val)
+		if err != nil {
+			// log.Fatal(err)
+			return false
+		}
+
+		if boolValue {
 			return true
 		}
 	}
