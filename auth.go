@@ -5,6 +5,7 @@ import (
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
+	log "github.com/sirupsen/logrus"
 )
 
 const (
@@ -21,6 +22,7 @@ func AuthMiddleware(key string, mode string) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		cookie, err := c.Cookie("jwt")
 		if cookie == "" {
+			log.Error("cookie name as jwt no found")
 			c.AbortWithStatus(http.StatusUnauthorized)
 			return
 		}
@@ -30,6 +32,7 @@ func AuthMiddleware(key string, mode string) gin.HandlerFunc {
 		})
 
 		if err != nil {
+			log.WithField("message": "parse claims failed").Error(err)
 			c.AbortWithStatus(http.StatusUnauthorized)
 			return
 		}
