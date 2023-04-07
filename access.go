@@ -70,7 +70,7 @@ func CanAccess(ctx context.Context,  redisAddr string, path string, roles []stri
 
 	// 仅进行路径的请求访问权限校验
 	for _, role := range roles {
-		val, err := rdb.Hget(ctx, path, role).Result()
+		val, err := rdb.HGet(ctx, path, role).Result()
 		if err != nil {
 			log.WithField("message", "no acceptable ").Error(err)
 			// c.AbortWithStatus(http.StatusNotAcceptable)
