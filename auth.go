@@ -19,7 +19,7 @@ const (
 )
 
 // AuthMiddleware 验证cookie并且将解析出来的商户号赋值到头部，供handler使用
-func AuthMiddleware(key string, mode string) gin.HandlerFunc {
+func AuthMiddleware(key []byte, mode string) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		cookie, err := c.Cookie("jwt")
 		if cookie == "" {
@@ -29,8 +29,7 @@ func AuthMiddleware(key string, mode string) gin.HandlerFunc {
 		}
 
 		token, err := jwt.ParseWithClaims(cookie, &jwt.StandardClaims{}, func(token *jwt.Token) (interface{}, error) {
-			sDec, _ := b64.StdEncoding.DecodeString(key)
-			return []byte(sDec), nil
+			return key, nil
 		})
 
 		if err != nil {
