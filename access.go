@@ -70,15 +70,14 @@ func CanAccess(ctx context.Context, redisAddr string, path string, roles []strin
 	for _, role := range roles {
 		val, err := rdb.HGet(ctx, path, role).Result()
 		if err != nil {
-			log.WithField("message", "no acceptable ").Error(err)
-			// c.AbortWithStatus(http.StatusNotAcceptable)
+			log.WithField("message", "no acceptable").WithField("path", path).Error(err)
 			return false
 		}
 		// is true
 		// 如果有一个角色是true 则代表其可以访问
 		boolValue, err := strconv.ParseBool(val)
 		if err != nil {
-			// log.Fatal(err)
+			log.WithField("message", "no acceptable").WithField("path", path).Error(err)
 			return false
 		}
 
