@@ -38,7 +38,12 @@ func AuthMiddleware(key []byte, mode string) gin.HandlerFunc {
 		}
 
 		claims := token.Claims.(*jwt.StandardClaims)
-		loginInfo := LoadLoginInfo(claims.Issuer)
+		loginInfo, err := LoadLoginInfo(claims.Issuer)
+		if err != nil {
+			log.WithField("message", "LoadLoginInfo failed").Error(err)
+			c.AbortWithStatus(http.StatusUnauthorized)
+			return
+		}
 
 		// 写入解析客户的jwt token后得到的数据
 		c.Request.Header.Set("MerchantId", loginInfo.Namespace)
