@@ -22,35 +22,35 @@ type LoginInfo struct {
 }
 
 // 登陆信息
-func DumpLoginInfo(namespace string, userId string, avatar string, loginType string, userName string, accountId string) string{
+func DumpLoginInfo(namespace string, userId string, avatar string, loginType string, userName string, accountId string) (string, error) {
 	// step 01 转换为json
 	loginInfo := LoginInfo{
 		Namespace: namespace,
 		AccountId: accountId,
-		UserId: userId,
-		UserName: userName,
-		Avatar: avatar,
+		UserId:    userId,
+		UserName:  userName,
+		Avatar:    avatar,
 		LoginType: loginType,
 	}
 	payload, err := json.Marshal(loginInfo)
 	if err != nil {
-		panic(err)
+		return "", err
 	}
 	sEnc := base64.StdEncoding.EncodeToString([]byte(payload))
-	return sEnc
+	return sEnc, nil
 }
 
 // 登陆信息
-func LoadLoginInfo(payload string) * LoginInfo {
+func LoadLoginInfo(payload string) (*LoginInfo, error) {
 	// step 01 转换为bytes
-	sDec, err  := base64.StdEncoding.DecodeString(payload)
+	sDec, err := base64.StdEncoding.DecodeString(payload)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 	loginInfo := &LoginInfo{}
 	err = json.Unmarshal(sDec, loginInfo)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
-	return loginInfo
+	return loginInfo, nil
 }
