@@ -11,6 +11,10 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+const (
+	AccessKeyPrefix = "access_key_prefix"
+)
+
 // AccessMiddleware 验证cookie并且将解析出来的账号
 // 通过账号获取角色
 // 通过角色判断其是否具有该api的访问权限
@@ -63,7 +67,7 @@ func AccessMiddleware(key []byte, redisAddr string) gin.HandlerFunc {
 	}
 }
 
-func CanAccess(ctx context.Context, redisAddr string, path string, roles []string) bool {
+func CanAccess(ctx context.Context, redisAddr string, path string, roles []string, accountId string) bool {
 	rdb := redis.NewClient(&redis.Options{
 		Addr:     redisAddr,
 		Password: "", // no password set
@@ -72,7 +76,8 @@ func CanAccess(ctx context.Context, redisAddr string, path string, roles []strin
 
 	// 仅进行路径的请求访问权限校验
 	for _, role := range roles {
-		val, err := rdb.HGet(ctx, path, role).Result()
+		key := AccessKeyPrefix + "_" + accountId + "_" + path
+		val, err := rdb.HGet(ctx, key, role).Result()
 		if err != nil {
 			log.WithField("message", "no acceptable").WithField("path", path).Error(err)
 			return false
