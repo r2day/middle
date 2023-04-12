@@ -56,7 +56,7 @@ func AccessMiddleware(key []byte, redisAddr string) gin.HandlerFunc {
 		// 查询数据库
 		roles := []string{"admin", "test"}
 		// 检测角色是否有权限
-		isAccess := CanAccess(c.Request.Context(), redisAddr, c.FullPath(), roles)
+		isAccess := CanAccess(c.Request.Context(), redisAddr, c.FullPath(), roles, loginInfo.AccountId)
 		if !isAccess {
 			log.WithField("message", "access denied").Error(err)
 			c.AbortWithStatus(http.StatusNotAcceptable)
