@@ -12,6 +12,7 @@ import (
 )
 
 const (
+	// AccessKeyPrefix redis 前缀
 	AccessKeyPrefix = "access_key_prefix"
 )
 
@@ -53,10 +54,9 @@ func AccessMiddleware(key []byte, redisAddr string) gin.HandlerFunc {
 		c.Request.Header.Set("UserName", loginInfo.UserName)
 		c.Request.Header.Set("Avatar", loginInfo.Avatar)
 		c.Request.Header.Set("LoginType", loginInfo.LoginType)
-		// 查询数据库
-		roles := []string{"admin", "test"}
+
 		// 检测角色是否有权限
-		isAccess := CanAccess(c.Request.Context(), redisAddr, c.FullPath(), roles, loginInfo.AccountId)
+		isAccess := CanAccess(c.Request.Context(), redisAddr, c.FullPath(), loginInfo.AccountId)
 		if !isAccess {
 			log.WithField("message", "access denied").Error(err)
 			c.AbortWithStatus(http.StatusNotAcceptable)
@@ -67,16 +67,26 @@ func AccessMiddleware(key []byte, redisAddr string) gin.HandlerFunc {
 	}
 }
 
-func CanAccess(ctx context.Context, redisAddr string, path string, roles []string, accountId string) bool {
+// CanAccess 是否允许访问
+func CanAccess(ctx context.Context, redisAddr string, path string, accountID string) bool {
 	rdb := redis.NewClient(&redis.Options{
 		Addr:     redisAddr,
 		Password: "", // no password set
 		DB:       0,  // use default DB
 	})
 
+	// 该账号下面的用户角色
+	keyPrefix := AccessKeyPrefix + "_" + accountID
+	keyForRoles := keyPrefix + "_" + "roles"
+	roles, err := rdb.SMembers(ctx, keyForRoles).Result()
+	if err != nil {
+		log.WithField("keyForRoles is no found", keyForRoles).Error(err)
+		return false
+	}
+
 	// 仅进行路径的请求访问权限校验
 	for _, role := range roles {
-		key := AccessKeyPrefix + "_" + accountId + "_" + path
+		key := AccessKeyPrefix + "_" + accountID + "_" + path
 		val, err := rdb.HGet(ctx, key, role).Result()
 		if err != nil {
 			log.WithField("message", "no acceptable").WithField("path", path).Error(err)
