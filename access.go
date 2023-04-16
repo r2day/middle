@@ -86,8 +86,11 @@ func CanAccess(ctx context.Context, path string, accountID string) bool {
 		if err != nil {
 			log.WithField("message", "access key no found on redis").
 				WithField("val", val).
-				WithField("path", path).WithField("key", key).Error(err)
-			return false
+				WithField("path", path).
+				WithField("key", key).
+				WithField("role", role).
+				Warning(err)
+			continue
 		}
 		// is true
 		// 如果有一个角色是true 则代表其可以访问
@@ -96,7 +99,7 @@ func CanAccess(ctx context.Context, path string, accountID string) bool {
 			log.WithField("message", "convert data type failed").
 				WithField("path", path).WithField("key", key).
 				WithField("boolValue", boolValue).Error(err)
-			return false
+			continue
 		}
 
 		if boolValue {
