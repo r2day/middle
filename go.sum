@@ -65,6 +65,8 @@ github.com/r2day/body v0.0.0-20230404133831-52a3d8dd1f77 h1:zrCLt+q41fsbFYhB5Okx
 github.com/r2day/body v0.0.0-20230404133831-52a3d8dd1f77/go.mod h1:m88Ssu6a+r3XxLWueDXugp7sUc2MauSIYCxAo+gDp/I=
 github.com/r2day/db v0.3.4 h1:tRBhwqBBkvkFVXVo4kmIglfFGkNuo2hS6vIFoP/GCYg=
 github.com/r2day/db v0.3.4/go.mod h1:vSBwaWdVXg+jgpLmybQjqCeaixRykKm7rqnK9a3Ehpk=
+github.com/r2day/db v0.3.5 h1:L6eysfaN2Q6+4tJ0P8B4MrEE+0dWvOGAd+yT5S+7ChE=
+github.com/r2day/db v0.3.5/go.mod h1:vSBwaWdVXg+jgpLmybQjqCeaixRykKm7rqnK9a3Ehpk=
 github.com/redis/go-redis/v9 v9.0.3 h1:+7mmR26M0IvyLxGZUHxu4GiBkJkVDid0Un+j4ScYu4k=
 github.com/redis/go-redis/v9 v9.0.3/go.mod h1:WqMKv5vnQbRuZstUwxQI195wHy+t4PuXDOjzMvcuQHk=
 github.com/rogpeppe/go-internal v1.6.1/go.mod h1:xXDCJY+GAPziupqXw64V24skbSoqbTEfhy4qGm1nDQc=
