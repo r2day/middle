@@ -89,14 +89,17 @@ func CanAccess(ctx context.Context, redisAddr string, path string, accountID str
 		key := AccessKeyPrefix + "_" + accountID + "_" + path
 		val, err := rdb.HGet(ctx, key, role).Result()
 		if err != nil {
-			log.WithField("message", "no acceptable").WithField("path", path).Error(err)
+			log.WithField("message", "access key no found on redis").
+				WithField("path", path).WithField("key", key).Error(err)
 			return false
 		}
 		// is true
 		// 如果有一个角色是true 则代表其可以访问
 		boolValue, err := strconv.ParseBool(val)
 		if err != nil {
-			log.WithField("message", "no acceptable").WithField("path", path).Error(err)
+			log.WithField("message", "convert data type failed").
+				WithField("path", path).WithField("key", key).
+				WithField("boolValue", boolValue).Error(err)
 			return false
 		}
 
