@@ -85,6 +85,7 @@ func CanAccess(ctx context.Context, path string, accountID string) bool {
 		val, err := db.RDB.HGet(ctx, key, role).Result()
 		if err != nil {
 			log.WithField("message", "access key no found on redis").
+				WithField("val", val).
 				WithField("path", path).WithField("key", key).Error(err)
 			return false
 		}
