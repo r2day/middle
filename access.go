@@ -79,7 +79,7 @@ func CanAccess(ctx context.Context, redisAddr string, path string, accountID str
 	keyPrefix := AccessKeyPrefix + "_" + accountID
 	keyForRoles := keyPrefix + "_" + "roles"
 	roles, err := rdb.SMembers(ctx, keyForRoles).Result()
-	if err != nil {
+	if err != nil || err != "redis: nil" {
 		log.WithField("keyForRoles is no found", keyForRoles).Error(err)
 		return false
 	}
