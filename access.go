@@ -84,21 +84,27 @@ func CanAccess(ctx context.Context, path string, accountID string) bool {
 		key := AccessKeyPrefix + "_" + accountID + "_" + path
 		val, err := db.RDB.HGet(ctx, key, role).Result()
 		if err != nil {
-			log.WithField("message", "access key no found on redis").
+			// 可以忽略该日志
+			// 一般情况下仅角色匹配到path即可访问
+			// 其他角色大部分会走该逻辑，因此将日志类别定义为debug
+			log.WithField("message", "call db.RDB.HGet failed").
 				WithField("val", val).
 				WithField("path", path).
 				WithField("key", key).
 				WithField("role", role).
-				Warning(err)
+				Debug(err)
 			continue
 		}
 		// is true
 		// 如果有一个角色是true 则代表其可以访问
 		boolValue, err := strconv.ParseBool(val)
 		if err != nil {
-			log.WithField("message", "convert data type failed").
+			// 可以忽略该日志
+			// 一般情况下仅角色匹配到path即可访问
+			// 其他角色大部分会走该逻辑，因此将日志类别定义为debug
+			log.WithField("message", "call strconv.ParseBool failed").
 				WithField("path", path).WithField("key", key).
-				WithField("boolValue", boolValue).Error(err)
+				WithField("boolValue", boolValue).Debug(err)
 			continue
 		}
 

@@ -12,13 +12,13 @@ func RequestRespMiddleware(enableLog bool) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		start := time.Now()
 		c.Next()
-		if(enableLog) {
+		if enableLog {
 			log.WithFields(log.Fields{
-				"method": c.Request.Method,
-				"path": c.FullPath(),
-				"status": c.Writer.Status(),
+				"method":     c.Request.Method,
+				"path":       c.FullPath(),
+				"status":     c.Writer.Status(),
 				"latency_ns": time.Since(start).Nanoseconds(),
-			}).Info("request_detail")
+			}).Debug("request and response cycle")
 		}
 	}
 }
