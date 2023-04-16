@@ -7,7 +7,7 @@ import (
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
-	"github.com/redis/go-redis/v9"
+	"github.com/r2day/db"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -21,7 +21,7 @@ const (
 // 通过角色判断其是否具有该api的访问权限
 // 用户登陆完成后会将权限配置信息写入 redis 数据库完成
 // 通过hget api/path/ role boolean
-func AccessMiddleware(key []byte, redisAddr string) gin.HandlerFunc {
+func AccessMiddleware(key []byte) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		cookie, err := c.Cookie("jwt")
 		if cookie == "" {
@@ -56,7 +56,7 @@ func AccessMiddleware(key []byte, redisAddr string) gin.HandlerFunc {
 		c.Request.Header.Set("LoginType", loginInfo.LoginType)
 
 		// 检测角色是否有权限
-		isAccess := CanAccess(c.Request.Context(), redisAddr, c.FullPath(), loginInfo.AccountId)
+		isAccess := CanAccess(c.Request.Context(), c.FullPath(), loginInfo.AccountId)
 		if !isAccess {
 			log.WithField("message", "access denied").Error(err)
 			c.AbortWithStatus(http.StatusNotAcceptable)
@@ -68,18 +68,13 @@ func AccessMiddleware(key []byte, redisAddr string) gin.HandlerFunc {
 }
 
 // CanAccess 是否允许访问
-func CanAccess(ctx context.Context, redisAddr string, path string, accountID string) bool {
-	rdb := redis.NewClient(&redis.Options{
-		Addr:     redisAddr,
-		Password: "", // no password set
-		DB:       0,  // use default DB
-	})
+func CanAccess(ctx context.Context, path string, accountID string) bool {
 
 	// 该账号下面的用户角色
 	keyPrefix := AccessKeyPrefix + "_" + accountID
 	keyForRoles := keyPrefix + "_" + "roles"
-	roles, err := rdb.SMembers(ctx, keyForRoles).Result()
-	if err != nil || err == redis.Nil {
+	roles, err := db.RDB.SMembers(ctx, keyForRoles).Result()
+	if err != nil {
 		log.WithField("keyForRoles is no found", keyForRoles).Error(err)
 		return false
 	}
@@ -87,8 +82,8 @@ func CanAccess(ctx context.Context, redisAddr string, path string, accountID str
 	// 仅进行路径的请求访问权限校验
 	for _, role := range roles {
 		key := AccessKeyPrefix + "_" + accountID + "_" + path
-		val, err := rdb.HGet(ctx, key, role).Result()
-		if err != nil || err == redis.Nil {
+		val, err := db.RDB.HGet(ctx, key, role).Result()
+		if err != nil {
 			log.WithField("message", "access key no found on redis").
 				WithField("path", path).WithField("key", key).Error(err)
 			return false
