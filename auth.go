@@ -52,6 +52,8 @@ func AuthMiddleware(key []byte, mode string) gin.HandlerFunc {
 		c.Request.Header.Set("UserName", loginInfo.UserName)
 		c.Request.Header.Set("Avatar", loginInfo.Avatar)
 		c.Request.Header.Set("LoginType", loginInfo.LoginType)
+
+		// 日志检查各项数据是否回传正常
 		c.Next()
 	}
 }
