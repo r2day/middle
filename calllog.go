@@ -71,7 +71,7 @@ func LoginLogMiddleware(db *mongo.Database, skipViewLog bool) gin.HandlerFunc {
 			// m.MerchantId = jsonInstance.MerchantId
 			m.ID = primitive.NewObjectID()
 			m.AccountID = c.GetHeader("AccountId")
-
+			m.MerchantID = c.GetHeader("MerchantId")
 			// 插入身份信息
 			createdAt := rtime.FomratTimeAsReader(time.Now().Unix())
 
@@ -98,7 +98,7 @@ func LoginLogMiddleware(db *mongo.Database, skipViewLog bool) gin.HandlerFunc {
 
 			m.ID = primitive.NewObjectID()
 			m.AccountID = c.GetHeader("AccountId")
-
+			m.MerchantID = c.GetHeader("MerchantId")
 			// 插入身份信息
 			createdAt := rtime.FomratTimeAsReader(time.Now().Unix())
 
