@@ -11,7 +11,7 @@ import (
 	"github.com/gin-gonic/gin/binding"
 	rtime "github.com/r2day/base/time"
 	"github.com/r2day/body"
-	"github.com/r2day/collections/clog"
+	clog "github.com/r2day/collections/auth/log"
 	log "github.com/sirupsen/logrus"
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
