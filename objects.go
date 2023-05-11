@@ -19,18 +19,21 @@ type LoginInfo struct {
 	Avatar string `json:"avatar"`
 	// LoginType 登陆类型
 	LoginType string `json:"login_type"  bson:"login_type"`
+	// LoginLevel 登陆用户等级
+	LoginLevel string `json:"login_level"  bson:"login_level"`
 }
 
-// 登陆信息
-func DumpLoginInfo(namespace string, userId string, avatar string, loginType string, userName string, accountId string) (string, error) {
+// DumpLoginInfo 登陆信息
+func DumpLoginInfo(namespace string, userId string, avatar string, loginType string, userName string, accountId string, loginLevel string) (string, error) {
 	// step 01 转换为json
 	loginInfo := LoginInfo{
-		Namespace: namespace,
-		AccountId: accountId,
-		UserId:    userId,
-		UserName:  userName,
-		Avatar:    avatar,
-		LoginType: loginType,
+		Namespace:  namespace,
+		AccountId:  accountId,
+		UserId:     userId,
+		UserName:   userName,
+		Avatar:     avatar,
+		LoginType:  loginType,
+		LoginLevel: loginLevel,
 	}
 	payload, err := json.Marshal(loginInfo)
 	if err != nil {
@@ -40,7 +43,7 @@ func DumpLoginInfo(namespace string, userId string, avatar string, loginType str
 	return sEnc, nil
 }
 
-// 登陆信息
+// LoadLoginInfo 解析登陆信息
 func LoadLoginInfo(payload string) (*LoginInfo, error) {
 	// step 01 转换为bytes
 	sDec, err := base64.StdEncoding.DecodeString(payload)

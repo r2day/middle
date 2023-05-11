@@ -54,7 +54,7 @@ func AccessMiddleware(key []byte) gin.HandlerFunc {
 		c.Request.Header.Set("UserName", loginInfo.UserName)
 		c.Request.Header.Set("Avatar", loginInfo.Avatar)
 		c.Request.Header.Set("LoginType", loginInfo.LoginType)
-
+		c.Request.Header.Set("LoginLevel", loginInfo.LoginLevel)
 		// 检测角色是否有权限
 		isAccess := CanAccess(c.Request.Context(), c.FullPath(), loginInfo.AccountId)
 		if !isAccess {
