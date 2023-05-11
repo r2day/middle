@@ -71,6 +71,7 @@ github.com/r2day/collections v0.5.9 h1:TGgWxPTs5eIIUJONt33m1ThYpegsX3eio1GC0qLbI
 github.com/r2day/collections v0.5.9/go.mod h1:MYVI9GkX+5q+IzGZb8oGSHT5l3VeXn9wfkJeQqRGFGY=
 github.com/r2day/collections v0.6.0 h1:XSNTKNpRQOdNsEM4jIeDD96RGMwpDRbNKkW6SEqT2BU=
 github.com/r2day/collections v0.6.0/go.mod h1:MYVI9GkX+5q+IzGZb8oGSHT5l3VeXn9wfkJeQqRGFGY=
+github.com/r2day/collections v1.0.4/go.mod h1:55Sv35Kh2FILYuBfz1vwhMJvwhT9PtBr78cmJkBa70s=
 github.com/r2day/collections v1.0.6 h1:0bx0kDpbKoYsTItvmVt7HMf50Y1iWAKVfTv44Tir/I0=
 github.com/r2day/collections v1.0.6/go.mod h1:IBJIiFVAt3bSRM0Vdqs9QX3r62IeFgQdyg9aVrZs+8s=
 github.com/r2day/db v0.3.4 h1:tRBhwqBBkvkFVXVo4kmIglfFGkNuo2hS6vIFoP/GCYg=
@@ -79,6 +80,8 @@ github.com/r2day/db v0.3.5 h1:L6eysfaN2Q6+4tJ0P8B4MrEE+0dWvOGAd+yT5S+7ChE=
 github.com/r2day/db v0.3.5/go.mod h1:vSBwaWdVXg+jgpLmybQjqCeaixRykKm7rqnK9a3Ehpk=
 github.com/r2day/rest v0.1.8 h1:gKpj2pARakEQcvcXHyTs9OEZ6Uzg8r5S3kNqyAVVdT8=
 github.com/r2day/rest v0.1.8/go.mod h1:W637PbUSYlabbEsh6oj3PLvqlMzGKUQCcxmydvx4XLg=
+github.com/r2day/rest v0.2.8 h1:0dcE2sCbwwRdUPqxYKdUaBjHQg5sUdWg3Nu4/mhA7ms=
+github.com/r2day/rest v0.2.8/go.mod h1:W637PbUSYlabbEsh6oj3PLvqlMzGKUQCcxmydvx4XLg=
 github.com/r2day/rest v0.7.2 h1:oOPGwHR0+Es8FsHub4ZSQS6ubnAInFvWYFrWK6M4jpc=
 github.com/r2day/rest v0.7.2/go.mod h1:W637PbUSYlabbEsh6oj3PLvqlMzGKUQCcxmydvx4XLg=
 github.com/redis/go-redis/v9 v9.0.3 h1:+7mmR26M0IvyLxGZUHxu4GiBkJkVDid0Un+j4ScYu4k=
