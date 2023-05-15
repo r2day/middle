@@ -80,9 +80,11 @@ func CanAccess(ctx context.Context, path string, accountID string) bool {
 	}
 
 	// 仅进行路径的请求访问权限校验
+	key := AccessKeyPrefix + "_" + accountID + "_" + "path_access"
 	for _, role := range roles {
-		key := AccessKeyPrefix + "_" + accountID + "_" + path
-		val, err := db.RDB.HGet(ctx, key, role).Result()
+		//key := AccessKeyPrefix + "_" + accountID + "_" + path
+		pathWithRole := path + "_" + role
+		val, err := db.RDB.HGet(ctx, key, pathWithRole).Result()
 		if err != nil {
 			// 可以忽略该日志
 			// 一般情况下仅角色匹配到path即可访问

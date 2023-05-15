@@ -74,6 +74,8 @@ github.com/r2day/collections v0.6.0/go.mod h1:MYVI9GkX+5q+IzGZb8oGSHT5l3VeXn9wfk
 github.com/r2day/collections v1.0.4/go.mod h1:55Sv35Kh2FILYuBfz1vwhMJvwhT9PtBr78cmJkBa70s=
 github.com/r2day/collections v1.0.6 h1:0bx0kDpbKoYsTItvmVt7HMf50Y1iWAKVfTv44Tir/I0=
 github.com/r2day/collections v1.0.6/go.mod h1:IBJIiFVAt3bSRM0Vdqs9QX3r62IeFgQdyg9aVrZs+8s=
+github.com/r2day/collections v1.0.8 h1:HY05DiCeSR6aDkhi16emLuzK7TNy0R8oz+lf6O4E5aY=
+github.com/r2day/collections v1.0.8/go.mod h1:2KPUfMVLiTdSLPc3kOIr/KMwCHeJEhDwT2kK114/qo8=
 github.com/r2day/db v0.3.4 h1:tRBhwqBBkvkFVXVo4kmIglfFGkNuo2hS6vIFoP/GCYg=
 github.com/r2day/db v0.3.4/go.mod h1:vSBwaWdVXg+jgpLmybQjqCeaixRykKm7rqnK9a3Ehpk=
 github.com/r2day/db v0.3.5 h1:L6eysfaN2Q6+4tJ0P8B4MrEE+0dWvOGAd+yT5S+7ChE=

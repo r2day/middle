@@ -24,8 +24,8 @@ const (
 )
 
 var (
-	customCallLogColl      = os.Getenv("CUSTOME_CALL_LOG_COLL")
-	customOperationLogColl = os.Getenv("CUSTOME_OPERATION_LOG_COLL")
+	customCallLogColl      = os.Getenv("CUSTOM_CALL_LOG_COLL")
+	customOperationLogColl = os.Getenv("CUSTOM_OPERATION_LOG_COLL")
 )
 
 // LoginLogMiddleware 登陆日志
