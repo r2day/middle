@@ -63,6 +63,14 @@ func AccessMiddleware(key []byte) gin.HandlerFunc {
 			return
 		}
 
+		// 检测账号是否有操作权限
+		isCanDo := CanDo(c.Request.Context(), c.FullPath(), loginInfo.AccountId, c.Request.Method)
+		if !isCanDo {
+			log.WithField("message", "operation denied").Error(err)
+			c.AbortWithStatus(http.StatusNotAcceptable)
+			return
+		}
+
 		c.Next()
 	}
 }
@@ -115,4 +123,39 @@ func CanAccess(ctx context.Context, path string, accountID string) bool {
 		}
 	}
 	return false
+}
+
+// CanDo 是否允许操作
+func CanDo(ctx context.Context, path string, accountID string, method string) bool {
+
+	// 该账号下面的用户角色
+	keyOperation := AccessKeyPrefix + "_" + accountID + "_operations"
+
+	//key := AccessKeyPrefix + "_" + accountID + "_" + path
+	pathWithMethod := path + "/" + method
+	val, err := db.RDB.HGet(ctx, keyOperation, pathWithMethod).Result()
+	if err != nil {
+		// 可以忽略该日志
+		// 一般情况下仅角色匹配到path即可访问
+		// 其他角色大部分会走该逻辑，因此将日志类别定义为debug
+		log.WithField("message", "call db.RDB.HGet failed").
+			WithField("val", val).
+			WithField("path", path).
+			WithField("pathWithMethod", pathWithMethod).
+			Debug(err)
+		return false
+	}
+	// is true
+	// 如果有一个角色是true 则代表其可以访问
+	boolValue, err := strconv.ParseBool(val)
+	if err != nil {
+		// 可以忽略该日志
+		// 一般情况下仅角色匹配到path即可访问
+		// 其他角色大部分会走该逻辑，因此将日志类别定义为debug
+		log.WithField("message", "call strconv.ParseBool failed").
+			WithField("path", path).WithField("key", key).
+			WithField("boolValue", boolValue).Debug(err)
+		return false
+	}
+	return boolValue
 }
