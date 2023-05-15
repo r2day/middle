@@ -153,7 +153,7 @@ func CanDo(ctx context.Context, path string, accountID string, method string) bo
 		// 一般情况下仅角色匹配到path即可访问
 		// 其他角色大部分会走该逻辑，因此将日志类别定义为debug
 		log.WithField("message", "call strconv.ParseBool failed").
-			WithField("path", path).WithField("key", key).
+			WithField("path", path).WithField("pathWithMethod", pathWithMethod).
 			WithField("boolValue", boolValue).Debug(err)
 		return false
 	}
