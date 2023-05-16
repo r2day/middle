@@ -169,10 +169,27 @@ func OperationMiddleware(db *mongo.Database, skipViewLog bool) gin.HandlerFunc {
 		m.Method = method
 		m.TargetID = c.Param("_id")
 		m.Operation = method2operation[method]
-
+		// 通过path查找接口名称
+		keyPrefix := AccessKeyPrefix + "_" + m.AccountID
+		keyPath2Name := keyPrefix + "_" + "path2name"
+		val, err := db.RDB.HGet(c.Request.Context(), keyPath2Name, fullPath).Result()
+		if err != nil {
+			// 可以忽略该日志
+			// 一般情况下仅角色匹配到path即可访问
+			// 其他角色大部分会走该逻辑，因此将日志类别定义为debug
+			log.WithField("message", "call db.RDB.HGet failed").
+				WithField("val", val).
+				WithField("fullPath", fullPath).
+				WithField("keyPath2Name", keyPath2Name).
+				Debug(err)
+			// 无法查找到路径对应的名称
+			//c.Next()
+			//return
+		}
+		m.Name = val
 		// 写入数据库
 		// 插入记录
-		_, err := m.Create(c.Request.Context())
+		_, err = m.Create(c.Request.Context())
 		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"message": "failed to insert one", "error": err.Error()})
 			return
