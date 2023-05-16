@@ -12,15 +12,11 @@ import (
 	rtime "github.com/r2day/base/time"
 	"github.com/r2day/body"
 	clog "github.com/r2day/collections/auth/log"
+	rdb "github.com/r2day/db"
 	log "github.com/sirupsen/logrus"
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
-)
-
-const (
-	defaultCallLogColl      = "default_call_log"
-	defaultOperationLogColl = "default_operation_log"
 )
 
 var (
@@ -172,7 +168,7 @@ func OperationMiddleware(db *mongo.Database, skipViewLog bool) gin.HandlerFunc {
 		// 通过path查找接口名称
 		keyPrefix := AccessKeyPrefix + "_" + m.AccountID
 		keyPath2Name := keyPrefix + "_" + "path2name"
-		val, err := db.RDB.HGet(c.Request.Context(), keyPath2Name, fullPath).Result()
+		val, err := rdb.RDB.HGet(c.Request.Context(), keyPath2Name, fullPath).Result()
 		if err != nil {
 			// 可以忽略该日志
 			// 一般情况下仅角色匹配到path即可访问
