@@ -182,6 +182,8 @@ func OperationMiddleware(db *mongo.Database, skipViewLog bool) gin.HandlerFunc {
 			//c.Next()
 			//return
 		}
+		logCtx.WithField("api_name", val).
+			Debug("check the api info")
 		m.Name = val
 		// 写入数据库
 		// 插入记录
