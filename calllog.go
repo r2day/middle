@@ -2,6 +2,7 @@ package middle
 
 import (
 	"github.com/r2day/collections/auth/operation"
+	"github.com/redis/go-redis/v9"
 	"net/http"
 	"os"
 	"strconv"
@@ -12,7 +13,6 @@ import (
 	rtime "github.com/r2day/base/time"
 	"github.com/r2day/body"
 	clog "github.com/r2day/collections/auth/log"
-	rdb "github.com/r2day/db"
 	log "github.com/sirupsen/logrus"
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -127,7 +127,7 @@ func LoginLogMiddleware(db *mongo.Database, skipViewLog bool) gin.HandlerFunc {
 }
 
 // OperationMiddleware 操作日志
-func OperationMiddleware(db *mongo.Database, skipViewLog bool) gin.HandlerFunc {
+func OperationMiddleware(rdb *redis.Client, skipViewLog bool) gin.HandlerFunc {
 
 	return func(c *gin.Context) {
 		// 获取用户登陆信息
@@ -168,7 +168,7 @@ func OperationMiddleware(db *mongo.Database, skipViewLog bool) gin.HandlerFunc {
 		// 通过path查找接口名称
 		keyPrefix := AccessKeyPrefix + "_" + m.AccountID
 		keyPath2Name := keyPrefix + "_" + "path2name"
-		val, err := rdb.RDB.HGet(c.Request.Context(), keyPath2Name, fullPath).Result()
+		val, err := rdb.HGet(c.Request.Context(), keyPath2Name, fullPath).Result()
 		if err != nil {
 			// 可以忽略该日志
 			// 一般情况下仅角色匹配到path即可访问
