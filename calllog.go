@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -168,14 +169,15 @@ func OperationMiddleware(rdb *redis.Client, skipViewLog bool) gin.HandlerFunc {
 		// 通过path查找接口名称
 		keyPrefix := AccessKeyPrefix + "_" + m.AccountID
 		keyPath2Name := keyPrefix + "_" + "path2name"
-		val, err := rdb.HGet(c.Request.Context(), keyPath2Name, fullPath).Result()
+		pathWithoutId := strings.TrimSuffix(fullPath, "/:_id")
+		val, err := rdb.HGet(c.Request.Context(), keyPath2Name, pathWithoutId).Result()
 		if err != nil {
 			// 可以忽略该日志
 			// 一般情况下仅角色匹配到path即可访问
 			// 其他角色大部分会走该逻辑，因此将日志类别定义为debug
 			log.WithField("message", "call db.RDB.HGet failed").
 				WithField("val", val).
-				WithField("fullPath", fullPath).
+				WithField("pathWithoutId", pathWithoutId).
 				WithField("keyPath2Name", keyPath2Name).
 				Debug(err)
 			// 无法查找到路径对应的名称
