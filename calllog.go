@@ -153,6 +153,7 @@ func OperationMiddleware(rdb *redis.Client, skipViewLog bool) gin.HandlerFunc {
 		m := &operation.Model{}
 		// 基本查询条件
 		m.MerchantID = c.GetHeader("MerchantId")
+		m.AccountID = c.GetHeader("AccountId")
 		m.ID = primitive.NewObjectID()
 
 		// 插入身份信息
