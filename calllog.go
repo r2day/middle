@@ -1,7 +1,7 @@
 package middle
 
 import (
-	"fmt"
+	"github.com/r2day/collections/auth/operation"
 	"net/http"
 	"os"
 	"strconv"
@@ -26,6 +26,15 @@ const (
 var (
 	customCallLogColl      = os.Getenv("CUSTOM_CALL_LOG_COLL")
 	customOperationLogColl = os.Getenv("CUSTOM_OPERATION_LOG_COLL")
+)
+
+var (
+	method2operation = map[string]string{
+		"GET":    "查看",
+		"POST":   "创建",
+		"PUT":    "更新",
+		"DELETE": "删除",
+	}
 )
 
 // LoginLogMiddleware 登陆日志
@@ -121,27 +130,30 @@ func LoginLogMiddleware(db *mongo.Database, skipViewLog bool) gin.HandlerFunc {
 	}
 }
 
-// CallLogMiddleware 调用日志
-func CallLogMiddleware(db *mongo.Database) gin.HandlerFunc {
+// OperationMiddleware 操作日志
+func OperationMiddleware(db *mongo.Database, skipViewLog bool) gin.HandlerFunc {
 
 	return func(c *gin.Context) {
+		// 获取用户登陆信息
+		clientIP := c.ClientIP()
+		remoteIP := c.RemoteIP()
+		fullPath := c.FullPath()
 		method := c.Request.Method
-		if c.Request.Method == http.MethodGet {
-			fmt.Println("it is get method ,no data change so don't need to record it by default")
+
+		logCtx := log.WithField("client_id", clientIP).
+			WithField("remote_ip", remoteIP).
+			WithField("full_path", fullPath).
+			WithField("method", method)
+
+		if c.Request.Method == http.MethodGet && skipViewLog {
+			// 如果是开启查看模式跳过，那么直接返回
+			logCtx.Debug("it is get method, we don't record it on database")
 			c.Next()
 			return
 		}
 
-		if customOperationLogColl == "" {
-			customOperationLogColl = defaultOperationLogColl
-		}
-
-		clientIP := c.ClientIP()
-		remoteIP := c.RemoteIP()
-		fullPath := c.FullPath()
-
 		// 声明表
-		m := &clog.Model{}
+		m := &operation.Model{}
 		// 基本查询条件
 		m.MerchantID = c.GetHeader("MerchantId")
 		m.ID = primitive.NewObjectID()
@@ -156,6 +168,7 @@ func CallLogMiddleware(db *mongo.Database) gin.HandlerFunc {
 		m.FullPath = fullPath
 		m.Method = method
 		m.TargetID = c.Param("_id")
+		m.Operation = method2operation[method]
 
 		// 写入数据库
 		// 插入记录
