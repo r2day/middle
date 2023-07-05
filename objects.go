@@ -24,6 +24,7 @@ type LoginInfo struct {
 }
 
 // DumpLoginInfo 登陆信息
+
 func DumpLoginInfo(namespace string, userId string, avatar string, loginType string, userName string, accountId string, loginLevel string) (string, error) {
 	// step 01 转换为json
 	loginInfo := LoginInfo{
